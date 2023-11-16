@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="3.0.0" method="upgrade" group="jshoppingorder">
+    <name>JoomShopping MonoParts</name>
+    <creationDate>6.11.2023</creationDate>
+    <author>Hvaekar</author>
+    <authorEmail>hvaekar@gmail.com</authorEmail>
+    <authorUrl>https://github.com/Hvaekar</authorUrl>
+    <copyright></copyright>
+    <license>Open Source License, GNU/GPL</license>
+    <version>1.0.0</version>	
+    <description>monoparts</description> 
+    <files>
+        <filename plugin="monoparts">monoparts.php</filename>
+    </files>
+</extension>
