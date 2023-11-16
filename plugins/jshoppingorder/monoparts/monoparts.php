@@ -29,7 +29,6 @@ class plgJshoppingOrderMonoparts extends JPlugin
         $pm_method = $order->getPayment();
         if ($pm_method->payment_class != "pm_monoparts") return;
         $pm_configs = $pm_method->getConfigs();
-        if (!$pm_configs['return_money']) return;
 
         // urls
         $base_url = $this->getBaseUrl($pm_configs['test']);
@@ -53,7 +52,7 @@ class plgJshoppingOrderMonoparts extends JPlugin
                 }
                 break;
             default:
-                if ($jshopConfig->no_return_all || !$monoparts_return) return;
+                if ($jshopConfig->no_return_all || !$monoparts_return || !$pm_configs['return_money']) return;
 
                 //$pay_sum = $this->getSum($order, $pm_configs);
                 $data = $this->getData($order, $pm_configs, $base_url);
