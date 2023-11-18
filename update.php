@@ -8,7 +8,7 @@ $pmclass = 'pm_monoparts';
 $folders = array('jshoppingorder', 'jshoppingadmin', 'jshoppingcheckout');
 $version = '2.0.0';
 $cache = '{"creationDate":"6.11.2023","author":"Hvaekar","authorEmail":"hvaekar@gmail.com","authorUrl":"https://github.com/Hvaekar","version":"' . $version . '"}';
-$params = '{"test":"1","store_id":"test_store_with_confirm","sign_key":"secret_98765432--123-123","max_parts":"25","transaction_end_status":"0","transaction_pending_status":"0","transaction_failed_status":"0","return_money":"0","transaction_cancel_status":"0","transaction_confirm_status":"0","sum_type":"0"}';
+$params = '{"test":"1","store_id":"test_store_with_confirm","sign_key":"secret_98765432--123-123","max_parts":"25","transaction_end_status":"0","transaction_pending_status":"0","transaction_failed_status":"0","return_money":"0","transaction_cancel_status":"0","transaction_confirm_status":"0","sum_type":"0","min_sum":"1","max_sum":"400000"}';
 
 $db = \JFactory::getDbo();
 foreach ($folders as $folder) {

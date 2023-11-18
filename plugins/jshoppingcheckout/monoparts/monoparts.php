@@ -7,7 +7,8 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
     /**
      * @var int
      */
-    private $pm_monoparts_max_parts;
+    private $pm_monoparts_min_sum = 1;
+    private $pm_monoparts_max_sum = 400000;
 
     public function __construct(&$subject, $config)
     {
@@ -16,8 +17,13 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
 
     public function onBeforeDisplayCheckoutStep3View(&$view)
     {
-        $cart = \JSFactory::getModel('cart', 'Site');
-        $cart->load();
+        $jshopConfig = \JSFactory::getConfig();
+        $cart = \JSFactory::getModel('cart', 'Site')->init('cart', 1);
+        $cartpreview = \JSFactory::getModel('cartPreview', 'Site');
+        $cartpreview->setCart($cart);
+        $cartpreview->setCheckoutStep(3);
+//        $cart = \JSFactory::getModel('cart', 'Site');
+//        $cart->load();
 
         $product_ids = '';
         $i = 1;
@@ -43,11 +49,11 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
             if ($pm->payment_class == 'pm_monoparts') {
                 $params = json_decode($view->payment_methods[$pm_key]->payment_system->pm_method->payment_params);
 
-                if ($max_parts > 0 && $max_parts < $params->max_parts) {
-                    $params->max_parts = $max_parts;
-                } elseif ($max_parts == 0) {
+                if (!$this->checkCartSum($cartpreview->getCart(), $params, $jshopConfig) || $max_parts == 0) {
                     unset($view->payment_methods[$pm_key]);
                     return;
+                } elseif ($max_parts > 0 && $max_parts < $params->max_parts) {
+                    $params->max_parts = $max_parts;
                 }
 
                 $parts_options = array();
@@ -96,5 +102,39 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
         $query = "SELECT pm_monoparts_max_parts FROM `#__jshopping_products` $query_where";
         $db->setQuery($query);
         return $db->loadObjectList();
+    }
+
+    private function checkCartSum($cart, $pm_params, $jshop_config) {
+        if ($pm_params->sum_type) {
+            $sum = $cart->price_product - $cart->rabatt_summ;
+        } else {
+            $sum = $cart->summ;
+        }
+        $sum = $this->fixSum($sum, $jshop_config);
+
+        if ($sum < $this->pm_monoparts_min_sum || $sum > $this->pm_monoparts_max_sum) {
+            return false;
+        }
+        return true;
+    }
+
+    function fixSum($sum, $jshop_config)
+    {
+        if ($jshop_config->currency_code_iso == 'UAH') {
+            $total = round($sum, 2);
+        } else {
+            $uah = $this->getCurrency('UAH');
+            $total = round($sum * $uah->currency_value / $jshop_config->currency_value, 2);
+        }
+        return $total;
+    }
+
+    private function getCurrency($currency_code_iso)
+    {
+        $db = \JFactory::getDBO();
+        $query_where = "WHERE currency_code_iso = '" . $currency_code_iso . "'";
+        $query = "SELECT * FROM `#__jshopping_currencies` $query_where";
+        $db->setQuery($query);
+        return $db->loadObJect();
     }
 }
