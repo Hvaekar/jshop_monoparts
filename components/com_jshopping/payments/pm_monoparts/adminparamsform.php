@@ -1,6 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 \JSFactory::loadExtLanguageFile('monoparts');
+JHtml::_('behavior.formvalidator');
 
 $yes_no_options = array();
 $yes_no_options[] = \JText::_('JNO');
@@ -31,8 +32,8 @@ $sum_type_options[] = _MONOPARTS_SUM_SUBTOTAL_MINUS;
                     <?php echo _MONOPARTS_STORE_ID; ?>
                 </td>
                 <td>
-                    <input id="pm_params_store_id" type="text" class="inputbox form-control" name="pm_params[store_id]" size="45"
-                           value="<?php echo $params['store_id'] ?>"/>
+                    <input id="pm_params_store_id" type="text" class="inputbox form-control required" name="pm_params[store_id]" size="45"
+                           value="<?php echo $params['store_id'] ?>" required/>
                 </td>
             </tr>
 
@@ -41,8 +42,8 @@ $sum_type_options[] = _MONOPARTS_SUM_SUBTOTAL_MINUS;
                     <?php echo _MONOPARTS_SIGN_KEY; ?>
                 </td>
                 <td>
-                    <input id="pm_params_sign_key" type="text" class="inputbox form-control" name="pm_params[sign_key]" size="45"
-                           value="<?php echo $params['sign_key'] ?>"/>
+                    <input id="pm_params_sign_key" type="text" class="inputbox form-control required" name="pm_params[sign_key]" size="45"
+                           value="<?php echo $params['sign_key'] ?>" required/>
                 </td>
             </tr>
 
@@ -51,8 +52,8 @@ $sum_type_options[] = _MONOPARTS_SUM_SUBTOTAL_MINUS;
                     <?php echo _MONOPARTS_MAX_PARTS; ?><br><small>min = 3, max = 25</small>
                 </td>
                 <td>
-                    <input type="number" step="1" min="3" max="25" class="inputbox form-control" name="pm_params[max_parts]"
-                           value="<?php echo $params['max_parts'] ?>"/>
+                    <input type="number" step="1" min="3" max="25" class="inputbox form-control required" name="pm_params[max_parts]"
+                           value="<?php echo $params['max_parts'] ?>" required/>
                 </td>
             </tr>
 
@@ -166,4 +167,7 @@ $sum_type_options[] = _MONOPARTS_SUM_SUBTOTAL_MINUS;
                 break;
         }
     }
+
+    const adminForm = document.getElementById('adminForm')
+    adminForm.classList.add('form-validate')
 </script>

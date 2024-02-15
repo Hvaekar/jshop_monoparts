@@ -47,27 +47,28 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
 
         foreach ($view->payment_methods as $pm_key => $pm) {
             if ($pm->payment_class == 'pm_monoparts') {
-                $params = json_decode($view->payment_methods[$pm_key]->payment_system->pm_method->payment_params);
+                $pm_method = \JSFactory::getTable('paymentMethod');
+                $pm_method->load($pm->payment_id);
+                $pm_configs = $pm_method->getConfigs();
 
-                if (!$this->checkCartSum($cartpreview->getCart(), $params, $jshopConfig) || $max_parts == 0) {
+                if (!$this->checkCartSum($cartpreview->getCart(), $pm_configs, $jshopConfig) || $max_parts == 0) {
                     unset($view->payment_methods[$pm_key]);
                     return;
-                } elseif ($max_parts > 0 && $max_parts < $params->max_parts) {
-                    $params->max_parts = $max_parts;
+                } elseif ($max_parts > 0 && $max_parts < $pm_configs['max_parts']) {
+                    $pm_configs['max_parts'] = $max_parts;
                 }
 
                 $parts_options = array();
                 $parts_options[''] = _MONOPARTS_PARTS_PLACEHOLDER;
-                for ($i = 3; $i <= $params->max_parts; $i++) {
+                for ($i = 3; $i <= $pm_configs['max_parts']; $i++) {
                     $parts_options[$i] = $i.' ('._MONOPARTS_FOR.' '.\JSHelper::formatprice($cart->price_product/$i).')';
                 }
 
                 $select = \JHTML::_('select.genericlist', $parts_options, 'params[pm_monoparts][parts]', 'class = "inputbox form-control uk-select" onchange="part_price();"', '', '', '', 'params_pm_monoparts_parts');
-
-                $new_params = json_encode($params, JSON_UNESCAPED_SLASHES);
-                $view->payment_methods[$pm_key]->payment_system->pm_method->payment_params = $new_params;
             }
         }
+
+        //var_dump($select);
 
         $view->_tmp_ext_html_payment_end .= "
         <script>
@@ -104,8 +105,8 @@ class plgJshoppingCheckoutMonoparts extends JPlugin
         return $db->loadObjectList();
     }
 
-    private function checkCartSum($cart, $pm_params, $jshop_config) {
-        if ($pm_params->sum_type) {
+    private function checkCartSum($cart, $pm_configs, $jshop_config) {
+        if ($pm_configs['sum_type']) {
             $sum = $cart->price_product - $cart->rabatt_summ;
         } else {
             $sum = $cart->summ;
